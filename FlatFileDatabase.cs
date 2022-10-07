@@ -15,7 +15,7 @@ namespace Lab2Solution
     /// <summary>
     /// This is the database class, currently a FlatFileDatabase
     /// </summary>
-    public class FlatFileDatabase : IDatabase
+    public class FlatFileDatabase 
     {
         String path = "";
         String filename = "clues.json";

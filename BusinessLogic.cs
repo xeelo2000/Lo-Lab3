@@ -19,7 +19,7 @@ namespace Lab2Solution
 
         public BusinessLogic()
         {
-            db = new FlatFileDatabase(); // new RelationalDatabase();           // 
+            db = new RelationalDatabase(); // new RelationalDatabase();           // 
         }
 
 
@@ -149,7 +149,36 @@ namespace Lab2Solution
 
             return EntryEditError.NoError;
         }
+
+        /// <summary>
+        /// Sorts entries by CLUE
+        /// </summary>
+        /// 
+        /// <returns>an erreor if there is sorting by CLUE did not work, SortByClueError.NoError otherwise</returns>
+        public SortByClueError SortByClue()
+        {
+            bool success = db.SortByClue();
+            if (!success)
+            {
+                return SortByClueError.SortByClueError;
+            }
+
+            return SortByClueError.NoError;
+        }
+
+        /// <summary>
+        /// Sorts entries by ANSWER
+        /// </summary>
+        /// <returns>an erreor if there is sorting by ANSWER did not work, SortByAnswerError.NoError otherwise</returns>
+        public SortByAnswerError SortByAnswer()
+        {
+            bool success = db.SortByAnswer();
+            if (!success)
+            {
+                return SortByAnswerError.SortByAnswerError;
+            }
+
+            return SortByAnswerError.NoError;
+        }
     }
-
-
 }

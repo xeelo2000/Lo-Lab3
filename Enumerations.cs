@@ -24,5 +24,17 @@ namespace Lab2Solution
         DBEditError,
         NoError
     }
+
+    public enum SortByClueError
+    {
+        SortByClueError,
+        NoError
+    }
+
+    public enum SortByAnswerError
+    {
+        SortByAnswerError,
+        NoError
+    }
 }
 

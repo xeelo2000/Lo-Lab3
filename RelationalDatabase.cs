@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Collections.ObjectModel;
 using Npgsql;
 
+
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
 
@@ -57,7 +58,7 @@ namespace Lab2Solution
                 // write the SQL to INSERT entry into bit.io
                 using var con = new NpgsqlConnection(connectionString);
                 con.Open();
-                var sql = "INSERT INTO entries (id, clue, answer, difficutly, date) VALUES(@id, @clue, @answer, @difficulty, @date)";
+                var sql = "INSERT INTO Entries (clue, answer, difficulty, date, id) VALUES(@clue, @answer, @difficulty, @date, @id)";
                 using var cmd = new NpgsqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("id", entry.Id);
                 cmd.Parameters.AddWithValue("clue", entry.Clue);
@@ -107,7 +108,7 @@ namespace Lab2Solution
 
                 using var con = new NpgsqlConnection(connectionString);
                 con.Open();
-                var sql = "DELETE FROM entries WHERE id = @id"; // don't hardcode,  
+                var sql = "DELETE FROM Entries WHERE id = @id"; // don't hardcode,  
                                                                   // and don't use unsanitized user input, instead ... 
                 using var cmd = new NpgsqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("id", entry.Id);
@@ -145,9 +146,9 @@ namespace Lab2Solution
                     try
                     {
                         //NEED TO FIX THIS AND NEED TO DO SORT BY CLUE AND ANSWER!!!!
-                        using var con = new NpgsqlConnection(connectionString);
+                        /*using var con = new NpgsqlConnection(connectionString);
                         con.Open();
-                        var sql = "INSERT INTO entries (id, clue, answer, difficutly, date) VALUES(@id, @clue, @answer, @difficulty, @date)";
+                        var sql = "INSERT INTO Entries (clue, answer, difficutly, date, id) VALUES(, @clue, @answer, @difficulty, @date, @id)";
                         using var cmd = new NpgsqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("id", entry.Id);
                         cmd.Parameters.AddWithValue("clue", entry.Clue);
@@ -156,7 +157,7 @@ namespace Lab2Solution
                         cmd.Parameters.AddWithValue("date", entry.Date);
                         int numRowsAffected = cmd.ExecuteNonQuery();
                         Console.WriteLine($"The # of rows inserted was {numRowsAffected}");
-                        con.Close();/// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
+                        con.Close();*//// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
 
                         return true;
                     }
@@ -209,6 +210,58 @@ namespace Lab2Solution
             return entries;
         }
 
+        
+        public bool SortByClue()
+        {
+            try
+            {
+                //NEED TO SORT THE OBSERVABLE COLLECTION SO IT CAN BE DISPLAYED 
+
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                var sql = "SELECT * FROM \"entries\" ORDER BY clue;";
+
+                using var cmd = new NpgsqlCommand(sql, con);
+
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                GetEntries();
+
+                return true;
+            }
+            catch (IOException ioe)
+            {
+                Console.WriteLine("Error while sorting entry by CLUE: {0}", ioe);
+            }
+            return false;
+        }
+
+        public bool SortByAnswer()
+        {
+            try
+            {
+                //NEED TO SORT THE OBSERVABLE COLLECTION SO IT CAN BE DISPLAYED 
+
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                var sql = "SELECT * FROM \"entries\" ORDER BY answer;";
+
+                using var cmd = new NpgsqlCommand(sql, con);
+
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                GetEntries();
+
+                return true;
+            }
+            catch (IOException ioe)
+            {
+                Console.WriteLine("Error while sorting entry by ANSWER: {0}", ioe);
+            }
+            return false;
+        }
         /// <summary>
         /// Creates the connection string to be utilized throughout the program
         /// 

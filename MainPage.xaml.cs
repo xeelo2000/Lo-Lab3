@@ -58,11 +58,15 @@ namespace Lab2Solution
             {
                 selectedEntry.Difficulty = difficulty;
                 Console.WriteLine($"Difficuilt is {selectedEntry.Difficulty}");
-                EntryEditError entryEditError = MauiProgram.ibl.EditEntry(selectedEntry.Clue, selectedEntry.Answer, difficulty, selectedEntry.Date, selectedEntry.Id);
+                EntryEditError entryEditError = MauiProgram.ibl.EditEntry(clueENT.Text, answerENT.Text, difficulty, dateENT.Text, selectedEntry.Id);
                 if(entryEditError != EntryEditError.NoError)
                 {
                     DisplayAlert("An error has occurred while editing an entry", $"{entryEditError}", "OK");
                 }
+            }
+            else
+            {
+                DisplayAlert("An error has occurred while editing an entry", "Invalid Difficulty", "Ok");
             }
         }
 
@@ -78,11 +82,21 @@ namespace Lab2Solution
 
         void SortByClue(System.Object sender, System.EventArgs e)
         {
+            SortByClueError sortByClueError = MauiProgram.ibl.SortByClue();
+            if (sortByClueError != SortByClueError.NoError)
+            {
+                DisplayAlert("An error has occurred while sorting entry by clue", $"{sortByClueError}", "OK");
+            }
 
         }
 
         void SortByAnswer(System.Object sender, System.EventArgs e)
         {
+            SortByAnswerError sortByAnswerError = MauiProgram.ibl.SortByAnswer();
+            if (sortByAnswerError != SortByAnswerError.NoError)
+            {
+                DisplayAlert("An error has occurred while sorting entry by answer", $"{sortByAnswerError}", "OK");
+            }
 
         }
 

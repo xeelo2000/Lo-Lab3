@@ -12,5 +12,7 @@ namespace Lab2Solution
         EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id);
         Entry FindEntry(int id);
         ObservableCollection<Entry> GetEntries();
+        SortByClueError SortByClue();
+        SortByAnswerError SortByAnswer();
     }
 }
