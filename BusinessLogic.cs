@@ -12,7 +12,7 @@ namespace Lab2Solution
     {
         const int MAX_CLUE_LENGTH = 250;
         const int MAX_ANSWER_LENGTH = 21;
-        const int MAX_DIFFICULTY = 5;
+        const int MAX_DIFFICULTY = 2;
         int latestId = 0;
 
         IDatabase db;                     // the actual database that does the hardwork

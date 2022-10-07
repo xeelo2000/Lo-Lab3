@@ -58,7 +58,7 @@ namespace Lab2Solution
             {
                 selectedEntry.Difficulty = difficulty;
                 Console.WriteLine($"Difficuilt is {selectedEntry.Difficulty}");
-                EntryEditError entryEditError = MauiProgram.ibl.EditEntry(selectedEntry.Clue, selectedEntry.Answer, selectedEntry.Difficulty, selectedEntry.Date, selectedEntry.Id);
+                EntryEditError entryEditError = MauiProgram.ibl.EditEntry(selectedEntry.Clue, selectedEntry.Answer, difficulty, selectedEntry.Date, selectedEntry.Id);
                 if(entryEditError != EntryEditError.NoError)
                 {
                     DisplayAlert("An error has occurred while editing an entry", $"{entryEditError}", "OK");
