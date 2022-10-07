@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
-
-namespace Lab1_2021
+using System.Collections.ObjectModel;
+namespace Lab2Solution
 {
+    /// <summary>
+    /// The interface for BusinessLogic
+    /// </summary>
     public interface IBusinessLogic
     {
         InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date);
         EntryDeletionError DeleteEntry(int entryId);
         EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id);
         Entry FindEntry(int id);
-        List<Entry> GetEntries();
+        ObservableCollection<Entry> GetEntries();
     }
 }

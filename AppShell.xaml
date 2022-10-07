@@ -7,7 +7,7 @@
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="Home"
+        Title="Clue Compendium"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

@@ -1,32 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace Lab1_2021
+namespace Lab2Solution
 {
 
-    public enum InvalidFieldError
-    {
-        InvalidClueLength,
-        InvalidAnswerLength,
-        InvalidDifficulty,
-        InvalidDate,
-        NoError
-    }
-
-    public enum EntryDeletionError
-    {
-        EntryNotFound,
-        DBDeletionError,
-        NoError
-    }
-
-    public enum EntryEditError
-    {
-        EntryNotFound,
-        InvalidFieldError,
-        DBEditError,
-        NoError
-    }
+    /// <summary>
+    /// Handles the BusinessLogic
+    /// </summary>
     public class BusinessLogic : IBusinessLogic
     {
         const int MAX_CLUE_LENGTH = 250;
@@ -34,18 +15,20 @@ namespace Lab1_2021
         const int MAX_DIFFICULTY = 5;
         int latestId = 0;
 
-        IUserInterface ui;
-        IDatabase db;
+        IDatabase db;                     // the actual database that does the hardwork
 
         public BusinessLogic()
         {
-            db = new Database();
-            ui = new UserInterface(this);
-            ui.DisplayMenu();
+            db = new FlatFileDatabase(); // new RelationalDatabase();           // 
         }
 
 
-        public List<Entry> GetEntries()
+        /// <summary>
+        /// Represents all entries
+        /// This also could have been a property
+        /// </summary>
+        /// <returns>ObservableCollection of entrties</returns>
+        public ObservableCollection<Entry> GetEntries()
         {
             return db.GetEntries();
         }
@@ -54,6 +37,15 @@ namespace Lab1_2021
         {
             return db.FindEntry(id);
         }
+
+        /// <summary>
+        /// Verifies that all the entry fields are valied
+        /// </summary>
+        /// <param name="clue"></param>
+        /// <param name="answer"></param>
+        /// <param name="difficulty"></param>
+        /// <param name="date"></param>
+        /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
 
         private InvalidFieldError CheckEntryFields(string clue, string answer, int difficulty, string date)
         {
@@ -65,7 +57,7 @@ namespace Lab1_2021
             {
                 return InvalidFieldError.InvalidAnswerLength;
             }
-            if (difficulty < 1 || difficulty > MAX_DIFFICULTY)
+            if (difficulty < 0 || difficulty > MAX_DIFFICULTY)
             {
                 return InvalidFieldError.InvalidDifficulty;
             }
@@ -74,6 +66,14 @@ namespace Lab1_2021
         }
 
 
+        /// <summary>
+        /// Adds an entry
+        /// </summary>
+        /// <param name="clue"></param>
+        /// <param name="answer"></param>
+        /// <param name="difficulty"></param>
+        /// <param name="date"></param>
+        /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
         public InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date)
         {
 
@@ -88,6 +88,11 @@ namespace Lab1_2021
             return InvalidFieldError.NoError;
         }
 
+        /// <summary>
+        /// Deletes an entry
+        /// </summary>
+        /// <param name="entryId"></param>
+        /// <returns>an erreor if there is one, EntryDeletionError.NoError otherwise</returns>
         public EntryDeletionError DeleteEntry(int entryId)
         {
 
@@ -113,14 +118,14 @@ namespace Lab1_2021
         }
 
         /// <summary>
-        /// 
+        /// Edits an Entry
         /// </summary>
         /// <param name="clue"></param>
         /// <param name="answer"></param>
         /// <param name="difficulty"></param>
         /// <param name="date"></param>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>an error if there is one, EntryEditError.None otherwise</returns>
         public EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id)
         {
 
@@ -136,7 +141,7 @@ namespace Lab1_2021
             entry.Difficulty = difficulty;
             entry.Date = date;
 
-            bool success = db.ReplaceEntry(entry);
+            bool success = db.EditEntry(entry);
             if (!success)
             {
                 return EntryEditError.DBEditError;

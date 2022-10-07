@@ -1,8 +1,17 @@
 ﻿namespace Lab2Solution;
 
+/**
+Name: XEE LO
+Date: OCTOBER 6, 2022
+Description: CS 341 SOFTWARE ENGINEERING: LAB 3
+Bugs: 
+Reflection: 
+*/
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+    public static IBusinessLogic ibl = new BusinessLogic();
+
+    public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder

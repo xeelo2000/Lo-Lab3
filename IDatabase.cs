@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace Lab1_2021
+namespace Lab2Solution
 {
     public interface IDatabase
     {
         void AddEntry(Entry entry);
         bool DeleteEntry(Entry entry);
         Entry FindEntry(int id);
-        List<Entry> GetEntries();
-        bool ReplaceEntry(Entry replacementEntry);
+        ObservableCollection<Entry> GetEntries();
+        bool EditEntry(Entry replacementEntry);
     }
 }

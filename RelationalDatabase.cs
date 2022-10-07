@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using System.Collections.ObjectModel;
+using Npgsql;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
@@ -15,11 +16,11 @@ namespace Lab2Solution
     /// <summary>
     /// This is the database class, currently a FlatFileDatabase
     /// </summary>
-    public class FlatFileDatabase : IDatabase
+    public class RelationalDatabase : IDatabase
     {
-        String path = "";
-        String filename = "clues.json";
 
+
+        String connectionString;
         /// <summary>
         /// A local version of the database, we *might* want to keep this in the code and merely
         /// adjust it whenever Add(), Delete() or Edit() is called
@@ -31,15 +32,14 @@ namespace Lab2Solution
 
         JsonSerializerOptions options;
 
-        public FlatFileDatabase()
+
+        /// <summary>
+        /// Here or thereabouts initialize a connectionString that will be used in all the SQL calls
+        /// </summary>
+        public RelationalDatabase()
         {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            path = $"{appDataPath}/{filename}"; // /data/user/0/com.companyname.basicdotnetmauiproject/files/clues.json
-            Console.WriteLine($"We've got your path right here: {path}");
-
-            GetEntries();
-            options = new JsonSerializerOptions { WriteIndented = true };
+            connectionString = InitializeConnectionString();
         }
 
 
@@ -54,8 +54,9 @@ namespace Lab2Solution
                 entry.Id = entries.Count + 1;
                 entries.Add(entry);
 
-                string jsonString = JsonSerializer.Serialize(entries, options);
-                File.WriteAllText(path, jsonString);
+                // write the SQL to INSERT entry into bit.io
+              
+
             }
             catch (IOException ioe)
             {
@@ -91,8 +92,12 @@ namespace Lab2Solution
             try
             {
                 var result = entries.Remove(entry);
-                string jsonString = JsonSerializer.Serialize(entries, options);
-                File.WriteAllText(path, jsonString);
+
+
+                // Write the SQL to DELETE entry from bit.io. You have its id, that should be all that you need
+
+
+
                 return true;
             }
             catch (IOException ioe)
@@ -116,12 +121,12 @@ namespace Lab2Solution
                     entry.Answer = replacementEntry.Answer;
                     entry.Clue = replacementEntry.Clue;
                     entry.Difficulty = replacementEntry.Difficulty;
-                    entry.Date = replacementEntry.Date;         // change it then write it out
+                    entry.Date = replacementEntry.Date;
 
                     try
                     {
-                        string jsonString = JsonSerializer.Serialize(entries, options);
-                        File.WriteAllText(path, jsonString);
+                       /// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
+
                         return true;
                     }
                     catch (IOException ioe)
@@ -140,19 +145,52 @@ namespace Lab2Solution
         /// <returns>all of the entries</returns>
         public ObservableCollection<Entry> GetEntries()
         {
-            if (!File.Exists(path))
+            while (entries.Count > 0)
             {
-                File.CreateText(path);
-                entries = new ObservableCollection<Entry>();
-                return entries;
+                entries.RemoveAt(0);
             }
 
-            string jsonString = File.ReadAllText(path);
-            if (jsonString.Length > 0)
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            var sql = "SELECT * FROM \"entries\" limit 10;";
+
+            using var cmd = new NpgsqlCommand(sql, con);
+
+            using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            // Columns are clue, answer, difficulty, date, id in that order ...
+            // Show all data
+            while (reader.Read())
             {
-                entries = JsonSerializer.Deserialize<ObservableCollection<Entry>>(jsonString);
+                for (int colNum = 0; colNum < reader.FieldCount; colNum++)
+                {
+                    Console.Write(reader.GetName(colNum) + "=" + reader[colNum] + " ");
+                }
+                Console.Write("\n");
+                entries.Add(new Entry(reader[0] as String, reader[1] as String, (int)reader[2], reader[3] as String, (int)reader[4]));
             }
+
+            con.Close();
+
+
+
             return entries;
+        }
+
+        /// <summary>
+        /// Creates the connection string to be utilized throughout the program
+        /// 
+        /// </summary>
+        public String InitializeConnectionString()
+        {
+            var bitHost = "db.bit.io";
+            var bitApiKey = ""; // from the "Password" field of the "Connect" menu
+
+            var bitUser = "";
+            var bitDbName = "";
+
+            return connectionString = $"Host={bitHost};Username={bitUser};Password={bitApiKey};Database={bitDbName}";
         }
     }
 }
