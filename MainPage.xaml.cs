@@ -64,8 +64,6 @@ namespace Lab2Solution
                     DisplayAlert("An error has occurred while editing an entry", $"{entryEditError}", "OK");
                 }
             }
-
-
         }
 
         void EntriesLV_ItemSelected(System.Object sender, Microsoft.Maui.Controls.SelectedItemChangedEventArgs e)

@@ -55,7 +55,18 @@ namespace Lab2Solution
                 entries.Add(entry);
 
                 // write the SQL to INSERT entry into bit.io
-              
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+                var sql = "INSERT INTO entries (id, clue, answer, difficutly, date) VALUES(@id, @clue, @answer, @difficulty, @date)";
+                using var cmd = new NpgsqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("id", entry.Id);
+                cmd.Parameters.AddWithValue("clue", entry.Clue);
+                cmd.Parameters.AddWithValue("answer", entry.Answer);
+                cmd.Parameters.AddWithValue("difficulty", entry.Difficulty);
+                cmd.Parameters.AddWithValue("date", entry.Date);
+                int numRowsAffected = cmd.ExecuteNonQuery();
+                Console.WriteLine($"The # of rows inserted was {numRowsAffected}");
+                con.Close();
 
             }
             catch (IOException ioe)
@@ -94,7 +105,15 @@ namespace Lab2Solution
                 var result = entries.Remove(entry);
 
 
-                // Write the SQL to DELETE entry from bit.io. You have its id, that should be all that you need
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+                var sql = "DELETE FROM entries WHERE id = @id"; // don't hardcode,  
+                                                                  // and don't use unsanitized user input, instead ... 
+                using var cmd = new NpgsqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("id", entry.Id);
+                int numRowsAffected = cmd.ExecuteNonQuery();
+                Console.WriteLine($"The # of rows deleted was {numRowsAffected}");
+                con.Close(); // Write the SQL to DELETE entry from bit.io. You have its id, that should be all that you need
 
 
 
@@ -125,7 +144,19 @@ namespace Lab2Solution
 
                     try
                     {
-                       /// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
+                        //NEED TO FIX THIS AND NEED TO DO SORT BY CLUE AND ANSWER!!!!
+                        using var con = new NpgsqlConnection(connectionString);
+                        con.Open();
+                        var sql = "INSERT INTO entries (id, clue, answer, difficutly, date) VALUES(@id, @clue, @answer, @difficulty, @date)";
+                        using var cmd = new NpgsqlCommand(sql, con);
+                        cmd.Parameters.AddWithValue("id", entry.Id);
+                        cmd.Parameters.AddWithValue("clue", entry.Clue);
+                        cmd.Parameters.AddWithValue("answer", entry.Answer);
+                        cmd.Parameters.AddWithValue("difficulty", entry.Difficulty);
+                        cmd.Parameters.AddWithValue("date", entry.Date);
+                        int numRowsAffected = cmd.ExecuteNonQuery();
+                        Console.WriteLine($"The # of rows inserted was {numRowsAffected}");
+                        con.Close();/// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
 
                         return true;
                     }
@@ -185,10 +216,10 @@ namespace Lab2Solution
         public String InitializeConnectionString()
         {
             var bitHost = "db.bit.io";
-            var bitApiKey = ""; // from the "Password" field of the "Connect" menu
+            var bitApiKey = "v2_3ueNx_pieD6yPBrLtmSGpikm5R4Nn"; // from the "Password" field of the "Connect" menu
 
-            var bitUser = "";
-            var bitDbName = "";
+            var bitUser = "xeelo2000";
+            var bitDbName = "xeelo2000/lab3";
 
             return connectionString = $"Host={bitHost};Username={bitUser};Password={bitApiKey};Database={bitDbName}";
         }
