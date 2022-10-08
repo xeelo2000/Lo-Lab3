@@ -169,9 +169,9 @@ namespace Lab2Solution
                         
                         using var con = new NpgsqlConnection(connectionString);
                         con.Open();
-                        var sql = "UPDATE Entries SET clue = @clue, answer = @answer, difficulty = @difficulty, date = @date, WHERE id = @id";
+                        var sql = "UPDATE Entries SET clue = @clue, answer = @answer, difficulty = @difficulty, date = @date WHERE id = @id";
                         using var cmd = new NpgsqlCommand(sql, con);
-                        
+                        cmd.Parameters.AddWithValue("id", entry.Id);
                         cmd.Parameters.AddWithValue("clue", entry.Clue);
                         cmd.Parameters.AddWithValue("answer", entry.Answer);
                         cmd.Parameters.AddWithValue("difficulty", entry.Difficulty);

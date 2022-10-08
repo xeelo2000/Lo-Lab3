@@ -36,11 +36,21 @@ namespace Lab2Solution
         void DeleteEntry(System.Object sender, System.EventArgs e)
         {
             Entry selectedEntry = EntriesLV.SelectedItem as Entry;
-            EntryDeletionError entryDeletionError = MauiProgram.ibl.DeleteEntry(selectedEntry.Id);
-            if(entryDeletionError != EntryDeletionError.NoError)
+            if (selectedEntry == null)
             {
-                DisplayAlert("An error has occurred while deleting an entry", $"{entryDeletionError}", "OK");
+                DisplayAlert("An error has occurred while deleting an entry", "No entry selected", "OK");
+
             }
+            else
+            {
+                EntryDeletionError entryDeletionError = MauiProgram.ibl.DeleteEntry(selectedEntry.Id);
+                if (entryDeletionError != EntryDeletionError.NoError)
+                {
+                    DisplayAlert("An error has occurred while deleting an entry", $"{entryDeletionError}", "OK");
+                }
+            }
+
+            
         }
 
         void EditEntry(System.Object sender, System.EventArgs e)
