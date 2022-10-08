@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using Npgsql;
+using System.Linq;
 
 
 // https://www.dotnetperls.com/serialize-list
@@ -52,7 +53,27 @@ namespace Lab2Solution
         {
             try
             {
-                entry.Id = entries.Count + 1;
+                int maxId = 0;
+                
+                if(entries.Count > 1)//if the Observable Collection length is greater than 1 
+                {
+                    int id = entries[0].Id;//make id equal the first index
+                   
+                    for (int i = 1; i < entries.Count; i++)//compare each index for the max ID
+                    {
+                        if (id < entries[i].Id)
+                        {
+                            maxId = entries[i].Id;
+                        }
+                    }
+                }
+                else if(entries.Count == 1)
+                {
+                    maxId = entries[0].Id;
+                }
+                    
+
+                entry.Id = maxId + 1;
                 entries.Add(entry);
 
                 // write the SQL to INSERT entry into bit.io
@@ -65,7 +86,7 @@ namespace Lab2Solution
                 cmd.Parameters.AddWithValue("answer", entry.Answer);
                 cmd.Parameters.AddWithValue("difficulty", entry.Difficulty);
                 cmd.Parameters.AddWithValue("date", entry.Date);
-                int numRowsAffected = cmd.ExecuteNonQuery();
+                int numRowsAffected = cmd.ExecuteNonQuery();    
                 Console.WriteLine($"The # of rows inserted was {numRowsAffected}");
                 con.Close();
 
@@ -145,19 +166,20 @@ namespace Lab2Solution
 
                     try
                     {
-                        //NEED TO FIX THIS AND NEED TO DO SORT BY CLUE AND ANSWER!!!!
-                        /*using var con = new NpgsqlConnection(connectionString);
+                        
+                        using var con = new NpgsqlConnection(connectionString);
                         con.Open();
-                        var sql = "INSERT INTO Entries (clue, answer, difficutly, date, id) VALUES(, @clue, @answer, @difficulty, @date, @id)";
+                        var sql = "UPDATE Entries SET clue = @clue, answer = @answer, difficulty = @difficulty, date = @date, WHERE id = @id";
                         using var cmd = new NpgsqlCommand(sql, con);
-                        cmd.Parameters.AddWithValue("id", entry.Id);
+                        
                         cmd.Parameters.AddWithValue("clue", entry.Clue);
                         cmd.Parameters.AddWithValue("answer", entry.Answer);
                         cmd.Parameters.AddWithValue("difficulty", entry.Difficulty);
                         cmd.Parameters.AddWithValue("date", entry.Date);
                         int numRowsAffected = cmd.ExecuteNonQuery();
                         Console.WriteLine($"The # of rows inserted was {numRowsAffected}");
-                        con.Close();*//// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
+                        con.Close();
+                        // write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
 
                         return true;
                     }
@@ -215,7 +237,11 @@ namespace Lab2Solution
         {
             try
             {
-                //NEED TO SORT THE OBSERVABLE COLLECTION SO IT CAN BE DISPLAYED 
+
+                while (entries.Count > 0)
+                {
+                    entries.RemoveAt(0);
+                }
 
                 using var con = new NpgsqlConnection(connectionString);
                 con.Open();
@@ -226,7 +252,17 @@ namespace Lab2Solution
 
                 using NpgsqlDataReader reader = cmd.ExecuteReader();
 
-                GetEntries();
+                while (reader.Read())
+                {
+                    for (int colNum = 0; colNum < reader.FieldCount; colNum++)
+                    {
+                        Console.Write(reader.GetName(colNum) + "=" + reader[colNum] + " ");
+                    }
+                    Console.Write("\n");
+                    entries.Add(new Entry(reader[0] as String, reader[1] as String, (int)reader[2], reader[3] as String, (int)reader[4]));
+                }
+
+                con.Close();
 
                 return true;
             }
@@ -241,7 +277,12 @@ namespace Lab2Solution
         {
             try
             {
-                //NEED TO SORT THE OBSERVABLE COLLECTION SO IT CAN BE DISPLAYED 
+
+                while (entries.Count > 0)
+                {
+                    entries.RemoveAt(0);
+                }
+
 
                 using var con = new NpgsqlConnection(connectionString);
                 con.Open();
@@ -252,7 +293,17 @@ namespace Lab2Solution
 
                 using NpgsqlDataReader reader = cmd.ExecuteReader();
 
-                GetEntries();
+                while (reader.Read())
+                {
+                    for (int colNum = 0; colNum < reader.FieldCount; colNum++)
+                    {
+                        Console.Write(reader.GetName(colNum) + "=" + reader[colNum] + " ");
+                    }
+                    Console.Write("\n");
+                    entries.Add(new Entry(reader[0] as String, reader[1] as String, (int)reader[2], reader[3] as String, (int)reader[4]));
+                }
+
+                con.Close();
 
                 return true;
             }
