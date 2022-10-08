@@ -57,6 +57,12 @@ namespace Lab2Solution
         {
 
             Entry selectedEntry = EntriesLV.SelectedItem as Entry;
+            if (selectedEntry == null)
+            {
+                DisplayAlert("An error has occurred while editing an entry", "No entry selected", "OK");
+                return;
+            }
+
             selectedEntry.Clue = clueENT.Text;
             selectedEntry.Answer = answerENT.Text;
             selectedEntry.Date = dateENT.Text;
