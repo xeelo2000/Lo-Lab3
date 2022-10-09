@@ -4,8 +4,8 @@
 Name: XEE LO
 Date: OCTOBER 6, 2022
 Description: CS 341 SOFTWARE ENGINEERING: LAB 3
-Bugs: 
-Reflection: 
+Bugs: N/A
+Reflection: I was able to learn how to connect to bit.io and use sql commands and excute it
 */
 public static class MauiProgram
 {
